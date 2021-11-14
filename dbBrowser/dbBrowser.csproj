@@ -1,0 +1,66 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net4.8</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Data\Model\UniversityDataBase.edmx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EntityDeploy Include="Data\Model\UniversityDataBase.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>UniversityDataBase.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EntityFramework" Version="6.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Security" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Data\Model\UniversityDataBase.Context.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>UniversityDataBase.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Data\Model\UniversityDataBase.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>UniversityDataBase.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Data\Model\UniversityDataBase.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>UniversityDataBase.edmx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Data\Model\UniversityDataBase.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>UniversityDataBase.Context.cs</LastGenOutput>
+    </None>
+    <None Update="Data\Model\UniversityDataBase.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>UniversityDataBase.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+</Project>
