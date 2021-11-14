@@ -15,7 +15,7 @@ namespace dbBrowser.ViewModels
 		private readonly UniversityDataBaseContainer _Db;
 
 		private string _Title = "AccessBrowser";
-		private KeyValuePair<string, DbSet>? _SelectedTable;
+		private string _SelectedTableName;
 
 		public string Title {
 			get => _Title;
@@ -25,12 +25,15 @@ namespace dbBrowser.ViewModels
 
 		public Dictionary<string, DbSet> TablesFromNames { get; }
 
-		public KeyValuePair<string, DbSet>? SelectedTable {
-			get => _SelectedTable;
+		public string SelectedTableName {
+			get => _SelectedTableName;
 			set {
-				Set(ref _SelectedTable, value, nameof(SelectedTable));
+				Set(ref _SelectedTableName, value);
+				OnPropertyChanged(nameof(SelectedDbSet));
 			}
 		}
+
+		public object SelectedDbSet => TablesFromNames[SelectedTableName].Local;
 
 		public MainWindowViewModel()
 		{
@@ -50,6 +53,9 @@ namespace dbBrowser.ViewModels
 			LoadFullTableDataCommand =
 				new LambdaCommand(OnLoadFullTableDataCommandExecuted, CanLoadFullTableDataCommandExecute);
 
+			SaveDbChangesCommand = 
+				new LambdaCommand(OnSaveDbChangesCommandExecuted, CanSaveDbChangesCommandExecute);
+
 			#endregion
 		}
 
@@ -66,8 +72,8 @@ namespace dbBrowser.ViewModels
 
 		private void OnLoadFullTableDataCommandExecuted(object p)
 		{
-			TablesFromNames[SelectedTable!.Value.Key].Load();
-			OnPropertyChanged(nameof(SelectedTable));
+			TablesFromNames[SelectedTableName].Load();
+			OnPropertyChanged(nameof(SelectedDbSet));
 		}
 
 		#endregion

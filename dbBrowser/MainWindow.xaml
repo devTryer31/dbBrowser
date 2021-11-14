@@ -22,9 +22,8 @@
 
                 <GridSplitter Grid.Column="0" HorizontalAlignment="Right" Width="4"/>
                 <GroupBox Grid.Column="0" Header="Таблицы" Margin="0 0 4 0">
-                    <ListBox ItemsSource="{Binding TablesFromNames}" 
-                             SelectedItem="{Binding SelectedTable}"
-                             DisplayMemberPath="Key"/>
+                    <ListBox ItemsSource="{Binding TablesFromNames.Keys}" 
+                             SelectedItem="{Binding SelectedTableName}"/>
 
                 </GroupBox>
                 <GroupBox Grid.Column="1" Header="Содержание">
@@ -42,13 +41,13 @@
                                                 Margin="5 0" Padding="3"/>
 
                                         </StackPanel>
-                                        <DataGrid ItemsSource="{Binding SelectedTable.Value.Value.Local}"
+                                        <DataGrid ItemsSource="{Binding SelectedDbSet}"
                                                   CanUserAddRows="True"/>
                                     </DockPanel>
                                 </Setter.Value>
                             </Setter>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding SelectedTable}" Value="{x:Null}">
+                                <DataTrigger Binding="{Binding SelectedTableName}" Value="{x:Null}">
                                     <Setter Property="Content">
                                         <Setter.Value>
                                             <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">
