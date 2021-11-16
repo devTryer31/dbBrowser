@@ -5,9 +5,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:dbBrowser"
         xmlns:vm="clr-namespace:dbBrowser.ViewModels"
+        xmlns:omodels="clr-namespace:System.Collections.ObjectModel;assembly=System"
         xmlns:c="clr-namespace:dbBrowser.Commands"
+        xmlns:dm="clr-namespace:dbBrowser.Data.Model"
         mc:Ignorable="d"
         Title="{Binding Title}" Height="450" Width="800">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Views/Tempates/DbSetTemplateDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
     <Window.DataContext>
         <vm:MainWindowViewModel/>
     </Window.DataContext>
@@ -22,7 +32,7 @@
 
                 <GridSplitter Grid.Column="0" HorizontalAlignment="Right" Width="4"/>
                 <GroupBox Grid.Column="0" Header="Таблицы" Margin="0 0 4 0">
-                    <ListBox ItemsSource="{Binding TablesFromNames.Keys}" 
+                    <ListBox ItemsSource="{Binding TablesViewModelsFromNames.Keys}" 
                              SelectedItem="{Binding SelectedTableName}"/>
 
                 </GroupBox>
@@ -41,8 +51,9 @@
                                                 Margin="5 0" Padding="3"/>
 
                                         </StackPanel>
-                                        <DataGrid ItemsSource="{Binding SelectedDbSet}"
-                                                  CanUserAddRows="True"/>
+
+                                        <ContentControl Content="{Binding SelectedViewModel}"/>
+
                                     </DockPanel>
                                 </Setter.Value>
                             </Setter>

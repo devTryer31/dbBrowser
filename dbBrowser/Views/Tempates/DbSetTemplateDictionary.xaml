@@ -1,0 +1,45 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:vm="clr-namespace:dbBrowser.ViewModels.Data"
+                    xmlns:dm="clr-namespace:dbBrowser.Data.Model"
+                    >
+
+    <DataTemplate DataType="{x:Type vm:FacultiesViewModel}">
+        <DataGrid ItemsSource="{Binding Items}" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Id" Binding="{Binding Id}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Название" Binding="{Binding Title}"/>
+                <DataGridTextColumn Header="Аудитория" Binding="{Binding Auditorium}"/>
+                <DataGridTextColumn Header="Декан" Binding="{Binding Dean}"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type vm:StudyGroupsViewModel}">
+        <DataGrid ItemsSource="{Binding Items}" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Id" Binding="{Binding Id}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Название" Binding="{Binding Title}"/>
+                <DataGridTextColumn Header="Кол-во студентов" Binding="{Binding StudentsAmount}"/>
+
+                <DataGridTemplateColumn Header="Факультет">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate DataType="{x:Type dm:StudyGroup}">
+                            <TextBlock Text="{Binding Faculty.Title, Mode=OneWay}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate DataType="{x:Type dm:StudyGroup}">
+                            <ComboBox DisplayMemberPath="Title"
+                                      ItemsSource="{Binding RelativeSource={RelativeSource  Mode=FindAncestor, AncestorType=DataGrid}, Path=DataContext.Faculties}"
+                                      SelectedItem="{Binding Faculty, Mode=OneWayToSource}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
+                </DataGridTemplateColumn>
+
+            </DataGrid.Columns>
+        </DataGrid>
+    </DataTemplate>
+
+
+</ResourceDictionary>
