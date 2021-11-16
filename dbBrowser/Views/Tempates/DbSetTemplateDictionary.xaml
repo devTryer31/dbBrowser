@@ -2,7 +2,9 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:vm="clr-namespace:dbBrowser.ViewModels.Data"
                     xmlns:dm="clr-namespace:dbBrowser.Data.Model"
-                    >
+                    xmlns:cnv="clr-namespace:dbBrowser.Infrastructure.Converters"
+                    xmlns:core="clr-namespace:System;assembly=mscorlib"
+                    xmlns:collections="clr-namespace:System.Collections;assembly=mscorlib">
 
     <DataTemplate DataType="{x:Type vm:FacultiesViewModel}">
         <DataGrid ItemsSource="{Binding Items}" AutoGenerateColumns="False">
@@ -41,5 +43,239 @@
         </DataGrid>
     </DataTemplate>
 
+    <DataTemplate DataType="{x:Type vm:StudentsViewModel}">
+        <DataGrid ItemsSource="{Binding Items}" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Id" Binding="{Binding Id}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Фамилия" Binding="{Binding Surname}"/>
+                <DataGridTextColumn Header="Имя" Binding="{Binding Name}"/>
+                <DataGridTextColumn Header="Отчество" Binding="{Binding Patronymic}"/>
+                <DataGridTextColumn Header="Адерс" Binding="{Binding Address}"/>
+
+                <DataGridTemplateColumn Header="День рождения">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate DataType="{x:Type dm:Student}">
+                            <TextBlock Text="{Binding Birthday, StringFormat=dd.MM.yyyy}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate DataType="{x:Type dm:Student}">
+                            <DatePicker SelectedDate="{Binding Birthday}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
+                </DataGridTemplateColumn>
+
+                <!--<DataGridComboBoxColumn Header="Пол" SelectedItemBinding="{Binding Path=}">
+                    <DataGridComboBoxColumn.ItemsSource>
+                        <collections:ArrayList>
+                            <dm:GenderType>Female</dm:GenderType>
+                            <dm:GenderType>Male</dm:GenderType>
+                        </collections:ArrayList>
+                    </DataGridComboBoxColumn.ItemsSource>
+                </DataGridComboBoxColumn>-->
+
+                <DataGridTemplateColumn Header="Группа">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate DataType="{x:Type dm:Student}">
+                            <TextBlock Text="{Binding StudyGroup.Title, Mode=OneWay}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate DataType="{x:Type dm:Student}">
+                            <ComboBox DisplayMemberPath="Title"
+                                      ItemsSource="{Binding RelativeSource={RelativeSource  Mode=FindAncestor, AncestorType=DataGrid}, Path=DataContext.StudyGroups}"
+                                      SelectedItem="{Binding StudyGroup, Mode=OneWayToSource}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
+                </DataGridTemplateColumn>
+
+            </DataGrid.Columns>
+        </DataGrid>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type vm:PrivilegesViewModel}">
+        <DataGrid ItemsSource="{Binding Items}" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Id" Binding="{Binding Id}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Наименование" Binding="{Binding Title}"/>
+                <DataGridTextColumn Header="Путь к документу" Binding="{Binding DocumenPath}"/>
+
+                <DataGridTemplateColumn Header="Дата выдачи">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate DataType="{x:Type dm:Privilege}">
+                            <TextBlock Text="{Binding ReleaseDate, StringFormat=dd.MM.yyyy}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate DataType="{x:Type dm:Privilege}">
+                            <DatePicker SelectedDate="{Binding ReleaseDate}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn Header="Студент">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate DataType="{x:Type dm:Privilege}">
+                            <TextBlock Text="{Binding Student.Id, Mode=OneWay}">
+                                <TextBlock.ToolTip>
+                                    <UniformGrid Columns="2" Rows="4">
+                                        <TextBlock Text="Фамилия:"/>
+                                        <TextBlock Text="{Binding Student.Surname}"/>
+                                        <TextBlock Text="Имя:"/>
+                                        <TextBlock Text="{Binding Student.Name}"/>
+                                        <TextBlock Text="Отчество:"/>
+                                        <TextBlock Text="{Binding Student.Patronymic}"/>
+                                        <TextBlock Text="Группа:"/>
+                                        <TextBlock Text="{Binding Student.StudyGroup.Title}"/>
+                                    </UniformGrid>
+                                </TextBlock.ToolTip>
+                            </TextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate DataType="{x:Type dm:Privilege}">
+                            <ComboBox DisplayMemberPath="Id"
+                                      ItemsSource="{Binding RelativeSource={RelativeSource  Mode=FindAncestor, AncestorType=DataGrid}, Path=DataContext.Students}"
+                                      SelectedItem="{Binding Student, Mode=OneWayToSource}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
+                </DataGridTemplateColumn>
+
+            </DataGrid.Columns>
+        </DataGrid>
+    </DataTemplate>
+
+
+    <DataTemplate DataType="{x:Type vm:StudentParentsViewModel}">
+        <DataGrid ItemsSource="{Binding Items}" AutoGenerateColumns="False">
+            <DataGrid.Resources>
+                <cnv:GenderTypeToStringConverter x:Key="GenderTypeToStringConverter"/>
+            </DataGrid.Resources>
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Id" Binding="{Binding Id}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Фамилия" Binding="{Binding Surname}"/>
+                <DataGridTextColumn Header="Имя" Binding="{Binding Name}"/>
+                <DataGridTextColumn Header="Отчество" Binding="{Binding Patronymic}"/>
+
+                <DataGridComboBoxColumn Header="Пол" 
+                                        SelectedItemBinding="{Binding Path=Gender, Converter={StaticResource GenderTypeToStringConverter}}">
+                    <DataGridComboBoxColumn.ItemsSource>
+                        <collections:ArrayList>
+                            <core:String>Жен</core:String>
+                            <core:String>Муж</core:String>
+                        </collections:ArrayList>
+                    </DataGridComboBoxColumn.ItemsSource>
+                </DataGridComboBoxColumn>
+
+                <DataGridTextColumn Header="Адерс" Binding="{Binding Address}"/>
+
+                <DataGridTemplateColumn Header="День рождения">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate DataType="{x:Type dm:Student}">
+                            <TextBlock Text="{Binding Birthday, StringFormat=dd.MM.yyyy}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate DataType="{x:Type dm:Student}">
+                            <DatePicker SelectedDate="{Binding Birthday}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
+                </DataGridTemplateColumn>
+
+                <!--<DataGridTemplateColumn Header="Группа">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate DataType="{x:Type dm:Student}">
+                            <TextBlock Text="{Binding StudyGroup.Title, Mode=OneWay}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate DataType="{x:Type dm:Student}">
+                            <ComboBox DisplayMemberPath="Title"
+                                      ItemsSource="{Binding RelativeSource={RelativeSource  Mode=FindAncestor, AncestorType=DataGrid}, Path=DataContext.StudyGroups}"
+                                      SelectedItem="{Binding StudyGroup, Mode=OneWayToSource}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
+                </DataGridTemplateColumn>-->
+
+            </DataGrid.Columns>
+        </DataGrid>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type vm:FamilyRelationsViewMode}">
+        <DataGrid ItemsSource="{Binding Items}" AutoGenerateColumns="False">
+            <DataGrid.Resources>
+                <cnv:ParentTypeToStringConverter x:Key="ParentTypeToStringConverter"/>
+            </DataGrid.Resources>
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Id" Binding="{Binding Id}" IsReadOnly="True"/>
+
+                <DataGridComboBoxColumn Header="Родственная связь" SelectedItemBinding="{Binding ParentType, Converter={StaticResource ParentTypeToStringConverter}}">
+                    <DataGridComboBoxColumn.ItemsSource>
+                        <collections:ArrayList>
+                            <core:String>Мать</core:String>
+                            <core:String>Отец</core:String>
+                        </collections:ArrayList>
+                    </DataGridComboBoxColumn.ItemsSource>
+                </DataGridComboBoxColumn>
+
+                <DataGridTemplateColumn Header="Студент">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate DataType="{x:Type dm:FamilyRelation}">
+                            <TextBlock Text="{Binding Student.Id, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+                                <TextBlock.ToolTip>
+                                    <UniformGrid Columns="2" Rows="4">
+                                        <TextBlock Text="Фамилия:"/>
+                                        <TextBlock Text="{Binding Student.Surname}"/>
+                                        <TextBlock Text="Имя:"/>
+                                        <TextBlock Text="{Binding Student.Name}"/>
+                                        <TextBlock Text="Отчество:"/>
+                                        <TextBlock Text="{Binding Student.Patronymic}"/>
+                                        <TextBlock Text="Группа:"/>
+                                        <TextBlock Text="{Binding Student.StudyGroup.Title}"/>
+                                    </UniformGrid>
+                                </TextBlock.ToolTip>
+                            </TextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate DataType="{x:Type dm:FamilyRelation}">
+                            <ComboBox DisplayMemberPath="Id"
+                                      ItemsSource="{Binding RelativeSource={RelativeSource  Mode=FindAncestor, AncestorType=DataGrid}, Path=DataContext.Students}"
+                                      SelectedItem="{Binding Student, Mode=OneWayToSource}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn Header="Родитель">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate DataType="{x:Type dm:FamilyRelation}">
+                            <TextBlock Text="{Binding StudentParent.Id, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+                                <TextBlock.ToolTip>
+                                    <UniformGrid Columns="2" Rows="4">
+                                        <TextBlock Text="Фамилия:"/>
+                                        <TextBlock Text="{Binding StudentParent.Surname}"/>
+                                        <TextBlock Text="Имя:"/>
+                                        <TextBlock Text="{Binding StudentParent.Name}"/>
+                                        <TextBlock Text="Отчество:"/>
+                                        <TextBlock Text="{Binding StudentParent.Patronymic}"/>
+                                    </UniformGrid>
+                                </TextBlock.ToolTip>
+                            </TextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate DataType="{x:Type dm:FamilyRelation}">
+                            <ComboBox DisplayMemberPath="Id"
+                                      ItemsSource="{Binding RelativeSource={RelativeSource  Mode=FindAncestor, AncestorType=DataGrid}, Path=DataContext.StudentParents}"
+                                      SelectedItem="{Binding StudentParent, Mode=OneWayToSource}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </DataTemplate>
 
 </ResourceDictionary>

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using dbBrowser.Data.Model;
 using dbBrowser.ViewModels.Base;
 
 namespace dbBrowser.ViewModels.Data

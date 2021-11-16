@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Linq;
 using dbBrowser.Data.Model;
 using dbBrowser.ViewModels.Base;
 
@@ -9,6 +10,7 @@ namespace dbBrowser.ViewModels.Data
 	public class StudentsViewModel : DataBaseDataViewModel<Student>
 	{
 		private readonly UniversityDataBaseContainer _Db;
+		private IEnumerable<StudyGroup> _Faculties;
 
 		public StudentsViewModel(UniversityDataBaseContainer db)
 		{
@@ -18,7 +20,15 @@ namespace dbBrowser.ViewModels.Data
 
 		public override void LoadItems()
 		{
+			_Db.StudyGroups.Load();
+			StudyGroups = _Db.StudyGroups.Local;
 			_Db.Students.Load();
+			OnPropertyChanged(nameof(Items));
+		}
+
+		public IEnumerable<StudyGroup> StudyGroups {
+			get => _Faculties ?? Enumerable.Empty<StudyGroup>();
+			set => Set(ref _Faculties, value);
 		}
 
 		public override IEnumerable<Student> Items { get; }
