@@ -7,6 +7,7 @@ using System.Windows.Input;
 using dbBrowser.Commands;
 using dbBrowser.Data.Model;
 using dbBrowser.ViewModels.Base;
+using dbBrowser.ViewModels.Data;
 
 namespace dbBrowser.ViewModels
 {
@@ -16,36 +17,39 @@ namespace dbBrowser.ViewModels
 
 		private string _Title = "AccessBrowser";
 		private string _SelectedTableName;
+		private IItemsLoaded _SelectedViewModel;
 
 		public string Title {
 			get => _Title;
 			set => Set(ref _Title, value);
 		}
 
+		public IItemsLoaded SelectedViewModel {
+			get => _SelectedViewModel;
+			set => Set(ref _SelectedViewModel, value);
+		}
 
-		public Dictionary<string, DbSet> TablesFromNames { get; }
+		public Dictionary<string, IItemsLoaded> TablesViewModelsFromNames { get; }
 
 		public string SelectedTableName {
 			get => _SelectedTableName;
 			set {
+				SelectedViewModel = TablesViewModelsFromNames[value];
 				Set(ref _SelectedTableName, value);
-				OnPropertyChanged(nameof(SelectedDbSet));
 			}
 		}
-
-		public object SelectedDbSet => TablesFromNames[SelectedTableName].Local;
 
 		public MainWindowViewModel()
 		{
 			_Db = new();
-			TablesFromNames = new()
+			TablesViewModelsFromNames = new()
 			{
-				{ "Faculties", _Db.Faculties },
-				{ "StudyGroups", _Db.StudyGroups },
-				{ "Students", _Db.Students },
-				{ "Privileges", _Db.Privileges },
-				{ "FamilyRelations", _Db.FamilyRelations },
-				{ "StudentParents", _Db.StudentParents },
+				{ "Faculties", new FacultiesViewModel(_Db) },
+				{ "StudyGroups", new StudyGroupsViewModel(_Db) },
+				{ "Students", new StudentsViewModel(_Db) },
+				{ "Privileges", new PrivilegesViewModel(_Db) },
+				{ "FamilyRelations", new FamilyRelationsViewMode(_Db) },
+				{ "StudentParents", new StudentParentsViewModel(_Db) },
 			};
 
 			#region Commands
@@ -53,7 +57,7 @@ namespace dbBrowser.ViewModels
 			LoadFullTableDataCommand =
 				new LambdaCommand(OnLoadFullTableDataCommandExecuted, CanLoadFullTableDataCommandExecute);
 
-			SaveDbChangesCommand = 
+			SaveDbChangesCommand =
 				new LambdaCommand(OnSaveDbChangesCommandExecuted, CanSaveDbChangesCommandExecute);
 
 			#endregion
@@ -72,8 +76,7 @@ namespace dbBrowser.ViewModels
 
 		private void OnLoadFullTableDataCommandExecuted(object p)
 		{
-			TablesFromNames[SelectedTableName].Load();
-			OnPropertyChanged(nameof(SelectedDbSet));
+			TablesViewModelsFromNames[SelectedTableName].LoadItems();
 		}
 
 		#endregion
