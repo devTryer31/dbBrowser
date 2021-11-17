@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using System.Linq;
-using System.Threading;
 using System.Windows.Input;
 using dbBrowser.Commands;
 using dbBrowser.Data.Model;
 using dbBrowser.ViewModels.Base;
+using dbBrowser.Views.Windows;
 
 namespace dbBrowser.ViewModels.Data
 {
@@ -30,6 +28,15 @@ namespace dbBrowser.ViewModels.Data
 
 			FindGroupsWithOrphanCommand =
 				new LambdaCommand(OnFindGroupsWithOrphanCommandExecuted, o => true);
+
+			StudentsByPatronymicCommand =
+				new LambdaCommand(OnStudentsByPatronymicCommandExecuted, o => true);
+
+			GetFacultyByGroupNameCommand =
+				new LambdaCommand(OnGetFacultyByGroupNameCommandExecuted, o => true);
+
+			GetParentsByStudentIdCommand =
+				new LambdaCommand(OnGetParentsByStudentIdCommandExecuted, o => true);
 
 			#endregion
 
@@ -77,22 +84,68 @@ namespace dbBrowser.ViewModels.Data
 		{
 			var q =
 				_Db.StudyGroups.Include("Students")
-					.Select(g => new {Group = g.Title, Count = g.Students.Count(s => s.Privileges.Any(p => p.Title == "Сирота"))})
+					.Select(g => new { Group = g.Title, Count = g.Students.Count(s => s.Privileges.Any(p => p.Title == "Сирота")) })
 					.Where(at => at.Count > 0);
 			Query = q.ToString();
 			ResultItems = q.ToList();
 		}
 
-		//public ICommand GetTheOldestStudentsCommand { get; set; }
+		//Massage boxes
 
-		//private void OnGetTheOldestStudentsCommandExecuted(object p)
-		//{
-		//	var q =
-		//		_Db.Students.OrderByDescending(s => s.Birthday).Take(3)
-		//			.Select(s => new { s.Id, s.Surname, s.Name, s.StudyGroup.Title });
-		//	Query = q.ToString();
-		//	ResultItems = q.ToList();
-		//}
+		public ICommand StudentsByPatronymicCommand { get; set; }
+
+		private void OnStudentsByPatronymicCommandExecuted(object p)
+		{
+			var qRes = ShowQueryDialog("Введите отчество:");
+			if (string.IsNullOrWhiteSpace(qRes))
+				return;
+
+			var q =
+				_Db.Students.Where(s => s.Patronymic == qRes);
+			Query = q.ToString();
+			ResultItems = q.ToList();
+		}
+
+		public ICommand GetParentsByStudentIdCommand { get; set; }
+
+		private void OnGetParentsByStudentIdCommandExecuted(object p)
+		{
+			var qRes = ShowQueryDialog("Введите Id студента:");
+			if (string.IsNullOrWhiteSpace(qRes))
+				return;
+
+			var qId = int.Parse(qRes);
+
+			var q =
+				_Db.FamilyRelations.Include("Student").Include("StudentParent")
+					.Where(fr => fr.Student.Id == qId)
+					.Select(fr => new { fr.StudentParent.Id, fr.StudentParent.Surname, fr.StudentParent.Name });
+			Query = q.ToString();
+			ResultItems = q.ToList();
+		}
+
+		public ICommand GetFacultyByGroupNameCommand { get; set; }
+
+		private void OnGetFacultyByGroupNameCommandExecuted(object p)
+		{
+			var qRes = ShowQueryDialog("Введите название группы:");
+			if (string.IsNullOrWhiteSpace(qRes))
+				return;
+
+			var q =
+				_Db.StudyGroups.Include("Faculty").Where(sg => sg.Title == qRes)
+					.Select(sg => new { sg.Faculty.Id, sg.Faculty.Title });
+			Query = q.ToString();
+			ResultItems = q.ToList();
+		}
+
+		private string ShowQueryDialog(string inputTitle)
+		{
+			MainDialogWindow qWindow = new();
+			qWindow.InputText.Text = inputTitle;
+			qWindow.ShowDialog();
+			return qWindow.ResultText.Text;
+		}
 		#endregion
 
 	}

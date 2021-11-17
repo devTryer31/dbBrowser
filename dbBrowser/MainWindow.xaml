@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:dbBrowser"
         xmlns:vm="clr-namespace:dbBrowser.ViewModels"
         xmlns:dvm="clr-namespace:dbBrowser.ViewModels.Data"
         mc:Ignorable="d"
@@ -118,15 +117,12 @@
                             </GroupBox>
                             <GroupBox Header="С параметром" DockPanel.Dock="Top">
                                 <StackPanel>
-                                    <Button Content="Самый старший студент" Margin="2"/>
-                                    <Button Content="У кого два родителя" Margin="2"/>
-                                    <Button Margin="2">
-                                        <Button.Content>
-                                            <TextBlock TextWrapping="Wrap">
-                                                Группы, с наибольшим количеством девушек
-                                            </TextBlock>
-                                        </Button.Content>
-                                    </Button>
+                                    <Button Content="Студенты с введенным отчеством" Margin="2"
+                                            Command="{Binding StudentsByPatronymicCommand}"/>
+                                    <Button Content="Факультет по названию группы" Margin="2"
+                                            Command="{Binding GetFacultyByGroupNameCommand}"/>
+                                    <Button Content="Родители по Id студента" Margin="2"
+                                            Command="{Binding GetParentsByStudentIdCommand}"/>
                                 </StackPanel>
                             </GroupBox>
                             <GroupBox Header="Строковой запрос">
