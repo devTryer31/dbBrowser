@@ -14,6 +14,7 @@ namespace dbBrowser.ViewModels.Data
 		{
 			_Db = db;
 			Items = db.StudyGroups.Local;
+			Faculties = _Db.Faculties.Local;
 		}
 
 		public override IEnumerable<StudyGroup> Items { get; }

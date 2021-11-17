@@ -13,6 +13,7 @@ namespace dbBrowser.ViewModels.Data
 		{
 			_Db = db;
 			Items = db.Privileges.Local;
+			Students = _Db.Students.Local;
 		}
 
 		public override void LoadItems()
