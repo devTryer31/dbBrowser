@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.Entity;
-using System.Linq;
 using System.Windows.Input;
 using dbBrowser.Commands;
 using dbBrowser.Data.Model;
@@ -15,7 +12,7 @@ namespace dbBrowser.ViewModels
 	{
 		private readonly UniversityDataBaseContainer _Db;
 
-		private string _Title = "AccessBrowser";
+		private string _Title = "dbBrowser";
 		private string _SelectedTableName;
 		private IItemsLoaded _SelectedViewModel;
 
@@ -60,6 +57,12 @@ namespace dbBrowser.ViewModels
 			SaveDbChangesCommand =
 				new LambdaCommand(OnSaveDbChangesCommandExecuted, CanSaveDbChangesCommandExecute);
 
+			LoadAllTablesDataCommand =
+				new LambdaCommand(OnLoadAllTablesDataCommandExecuted, CanLoadAllTablesDataCommandExecute);
+
+			RemoveAllDataTablesChangesCommand =
+				new LambdaCommand(OnRemoveAllDataTablesChangesCommandExecuted, CanRemoveAllDataTablesChangesCommandExecute);
+
 			#endregion
 		}
 
@@ -90,6 +93,49 @@ namespace dbBrowser.ViewModels
 		private void OnSaveDbChangesCommandExecuted(object p)
 		{
 			_Db.SaveChanges();
+		}
+
+		#endregion
+
+		#region LoadAllTablesDataCommand
+
+		public ICommand LoadAllTablesDataCommand { get; }
+
+		private bool CanLoadAllTablesDataCommandExecute(object p) => true;
+
+		private void OnLoadAllTablesDataCommandExecuted(object p)
+		{
+			_Db.Faculties.Load();
+			_Db.StudyGroups.Load();
+			_Db.Students.Load();
+			_Db.StudentParents.Load();
+			_Db.FamilyRelations.Load();
+			_Db.Privileges.Load();
+		}
+
+		#endregion
+
+		#region RemoveAllDataTablesChangesCommand
+
+		public ICommand RemoveAllDataTablesChangesCommand { get; }
+
+		private bool CanRemoveAllDataTablesChangesCommandExecute(object p) => true;
+
+		private void OnRemoveAllDataTablesChangesCommandExecuted(object p)
+		{
+			foreach (var entry in _Db.ChangeTracker.Entries()) {
+				switch (entry.State) {
+					case EntityState.Modified:
+						entry.State = EntityState.Unchanged;
+						break;
+					case EntityState.Deleted:
+						entry.Reload();
+						break;
+					case EntityState.Added:
+						entry.State = EntityState.Detached;
+						break;
+				}
+			}
 		}
 
 		#endregion

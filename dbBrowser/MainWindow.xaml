@@ -5,9 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:dbBrowser"
         xmlns:vm="clr-namespace:dbBrowser.ViewModels"
-        xmlns:omodels="clr-namespace:System.Collections.ObjectModel;assembly=System"
-        xmlns:c="clr-namespace:dbBrowser.Commands"
-        xmlns:dm="clr-namespace:dbBrowser.Data.Model"
+        xmlns:dvm="clr-namespace:dbBrowser.ViewModels.Data"
         mc:Ignorable="d"
         Title="{Binding Title}" Height="450" Width="800">
     <Window.Resources>
@@ -31,12 +29,23 @@
                 </Grid.ColumnDefinitions>
 
                 <GridSplitter Grid.Column="0" HorizontalAlignment="Right" Width="4"/>
-                <GroupBox Grid.Column="0" Header="Таблицы" Margin="0 0 4 0">
-                    <ListBox ItemsSource="{Binding TablesViewModelsFromNames.Keys}" 
+                <DockPanel Grid.Column="0" >
+                    <UniformGrid Rows="3" DockPanel.Dock="Bottom" >
+                        <Button Content="Загрузить все аднные" Margin="2"
+                            Command="{Binding LoadAllTablesDataCommand}"/>
+                        <Button Content="Отменить все изменения" Margin="2" Background="IndianRed" Foreground="AliceBlue"
+                                Command="{Binding RemoveAllDataTablesChangesCommand}"/>
+                        <Button Content="Сохранить все изменения" Margin="2" Background="LimeGreen" Foreground="DarkSlateBlue"
+                                Command="{Binding SaveDbChangesCommand}"/>
+                    </UniformGrid>
+                    <GroupBox Header="Таблицы" Margin="0 0 4 0">
+                        <ListBox ItemsSource="{Binding TablesViewModelsFromNames.Keys}" 
                              SelectedItem="{Binding SelectedTableName}"/>
 
-                </GroupBox>
-                <GroupBox Grid.Column="1" Header="Содержание">
+                    </GroupBox>
+
+                </DockPanel>
+                <GroupBox Grid.Column="1" Header="Содержание" Margin="1">
                     <GroupBox.Style>
                         <Style TargetType="{x:Type GroupBox}">
                             <Setter Property="Content">
@@ -44,15 +53,11 @@
                                     <DockPanel>
                                         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
                                             <Button Command="{Binding LoadFullTableDataCommand}"
-                                                Content="Импортировать данные"
+                                                Content="Восстановить связи"
                                                 Margin="5 0" Padding="3"/>
-                                            <Button Command="{Binding SaveDbChangesCommand}"
-                                                Content="Сохранить изменения"
-                                                Margin="5 0" Padding="3"/>
-
                                         </StackPanel>
 
-                                        <ContentControl Content="{Binding SelectedViewModel}"/>
+                                        <ContentControl Content="{Binding SelectedViewModel, UpdateSourceTrigger=PropertyChanged}"/>
 
                                     </DockPanel>
                                 </Setter.Value>
@@ -75,6 +80,66 @@
             </Grid>
 
 
+        </TabItem>
+
+        <TabItem Header="Запросы">
+            <TabItem.DataContext>
+                <dvm:QueryPageViewModel/>
+            </TabItem.DataContext>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="3*"/>
+                    <ColumnDefinition Width="7*"/>
+                </Grid.ColumnDefinitions>
+
+                <GroupBox Grid.Column="1" Header="Результат">
+                    <DataGrid IsReadOnly="True" ItemsSource="{Binding ResultItems}"/>
+                </GroupBox>
+
+                <GroupBox Grid.Column="0" Header="Запросы на выборку" Margin="0 0 3 0">
+                    <DockPanel>
+
+                        <DockPanel>
+                            <GroupBox Header="Без параметра" DockPanel.Dock="Top">
+                                <StackPanel>
+                                    <Button Content="Самые старшие студенты" Margin="2"
+                                            Command="{Binding GetTheOldestStudentsCommand}"/>
+                                    <Button Content="У кого два родителя" Margin="2"
+                                            Command="{Binding GetTwoParentsStudentsCommand}"/>
+                                    <Button Margin="2"
+                                            Command="{Binding FindGroupsWithOrphanCommand}">
+                                        <Button.Content>
+                                            <TextBlock TextWrapping="Wrap">
+                                                Группы, в которых есть сироты
+                                            </TextBlock>
+                                        </Button.Content>
+                                    </Button>
+                                </StackPanel>
+                            </GroupBox>
+                            <GroupBox Header="С параметром" DockPanel.Dock="Top">
+                                <StackPanel>
+                                    <Button Content="Самый старший студент" Margin="2"/>
+                                    <Button Content="У кого два родителя" Margin="2"/>
+                                    <Button Margin="2">
+                                        <Button.Content>
+                                            <TextBlock TextWrapping="Wrap">
+                                                Группы, с наибольшим количеством девушек
+                                            </TextBlock>
+                                        </Button.Content>
+                                    </Button>
+                                </StackPanel>
+                            </GroupBox>
+                            <GroupBox Header="Строковой запрос">
+                                <ScrollViewer>
+                                    <TextBlock Text="{Binding Query}" Background="LightGray"/>
+                                </ScrollViewer>
+                            </GroupBox>
+                        </DockPanel>
+                    </DockPanel>
+                </GroupBox>
+
+                <GridSplitter Grid.Column="0" HorizontalAlignment="Right" Width="3"/>
+            </Grid>
         </TabItem>
     </TabControl>
 
