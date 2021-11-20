@@ -1,5 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
+using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Input;
 using dbBrowser.Commands;
 using dbBrowser.Data.Model;
@@ -13,6 +18,7 @@ namespace dbBrowser.ViewModels.Data
 		private readonly UniversityDataBaseContainer _Db;
 		private string _Query;
 		private IEnumerable _ResultItems;
+		private string _QueryStringResult;
 
 		public QueryPageViewModel()
 		{
@@ -38,6 +44,9 @@ namespace dbBrowser.ViewModels.Data
 			GetParentsByStudentIdCommand =
 				new LambdaCommand(OnGetParentsByStudentIdCommandExecuted, o => true);
 
+			ExecuteSqlQueryCommand =
+				new LambdaCommand(OnExecuteSqlQueryCommandExecuted, o => true);
+
 			#endregion
 
 		}
@@ -52,6 +61,10 @@ namespace dbBrowser.ViewModels.Data
 			set => Set(ref _ResultItems, value);
 		}
 
+		public string QueryStringResult {
+			get => _QueryStringResult;
+			set => Set(ref _QueryStringResult, value);
+		}
 
 		#region Commands
 
@@ -146,6 +159,58 @@ namespace dbBrowser.ViewModels.Data
 			qWindow.ShowDialog();
 			return qWindow.ResultText.Text;
 		}
+
+		public ICommand ExecuteSqlQueryCommand { get; set; }
+
+		private void OnExecuteSqlQueryCommandExecuted(object p)
+		{
+			string firstWord = Query.Split(' ')[0].ToLower();
+			if (firstWord is "insert" or "update" or "delete") {
+				int RowsAffected = _Db.Database.ExecuteSqlCommand(Query);
+				ResultItems = new List<object> { new { RowsAffected } };
+				return;
+			}
+
+			//ResultItems = _Db.Database.SqlQuery<object>(Query).ToList();
+			var objs = new object[10];
+			var resList = new List<object>(10);
+			using (SqlConnection connection = new SqlConnection(_Db.Database.Connection.ConnectionString)) {
+				SqlCommand command = new SqlCommand(Query, connection);
+				try {
+					connection.Open();
+					SqlDataReader reader = command.ExecuteReader();
+					while (reader.Read())
+					{
+						QueryStringResult += reader.GetValues(objs);
+						resList.Add(
+							new
+							{
+								col0 = objs[0],
+								col1 = objs[1],
+								col2 = objs[2],
+								col3 = objs[3],
+								col4 = objs[4],
+								col5 = objs[5],
+								col6 = objs[6],
+								col7 = objs[7],
+								col8 = objs[8],
+								col9 = objs[9]
+							});
+					}
+					reader.Close();
+				}
+				catch (Exception e)
+				{
+					MessageBox.Show(e.Message);
+				}
+				finally {
+					connection.Close();
+				}
+			}
+
+			ResultItems = resList;
+		}
+
 		#endregion
 
 	}

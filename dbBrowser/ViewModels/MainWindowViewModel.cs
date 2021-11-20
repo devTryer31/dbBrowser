@@ -111,6 +111,7 @@ namespace dbBrowser.ViewModels
 			_Db.StudentParents.Load();
 			_Db.FamilyRelations.Load();
 			_Db.Privileges.Load();
+			OnPropertyChanged(nameof(SelectedViewModel));
 		}
 
 		#endregion

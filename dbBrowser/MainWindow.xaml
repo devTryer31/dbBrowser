@@ -137,6 +137,24 @@
                 <GridSplitter Grid.Column="0" HorizontalAlignment="Right" Width="3"/>
             </Grid>
         </TabItem>
+
+        <TabItem Header="SQL запросы">
+            <TabItem.DataContext>
+                <dvm:QueryPageViewModel/>
+            </TabItem.DataContext>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <TextBox Grid.Row="0" Background="LightGray" Text="{Binding Query}" Margin="0 0 0 3"/>
+                <GridSplitter Grid.Row="0" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Height="3" Background="LightSteelBlue"/>
+                <Button Grid.Row="1" Content="Выполнить" HorizontalAlignment="Left" Margin="10 3" Command="{Binding ExecuteSqlQueryCommand}"/>
+                <DataGrid Grid.Row="2" ItemsSource="{Binding ResultItems}" IsReadOnly="True"/>
+                <!--<TextBox Grid.Row="2" />-->
+            </Grid>
+        </TabItem>
     </TabControl>
 
 </Window>
