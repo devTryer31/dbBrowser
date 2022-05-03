@@ -15,6 +15,12 @@ namespace dbBrowser.ViewModels
 		private string _Title = "dbBrowser";
 		private string _SelectedTableName;
 		private IItemsLoaded _SelectedViewModel;
+		private DiagramsViewModel _diagramsViewModel;
+
+		public DiagramsViewModel DiagramsViewModel {
+			get => _diagramsViewModel;
+			set => Set(ref _diagramsViewModel, value);
+		}
 
 		public string Title {
 			get => _Title;
@@ -48,6 +54,8 @@ namespace dbBrowser.ViewModels
 				{ "FamilyRelations", new FamilyRelationsViewMode(_Db) },
 				{ "StudentParents", new StudentParentsViewModel(_Db) },
 			};
+
+			DiagramsViewModel = new DiagramsViewModel(_Db);
 
 			#region Commands
 
@@ -93,6 +101,7 @@ namespace dbBrowser.ViewModels
 		private void OnSaveDbChangesCommandExecuted(object p)
 		{
 			_Db.SaveChanges();
+			DiagramsViewModel.UpdateAllDiagrams();
 		}
 
 		#endregion
@@ -124,8 +133,10 @@ namespace dbBrowser.ViewModels
 
 		private void OnRemoveAllDataTablesChangesCommandExecuted(object p)
 		{
-			foreach (var entry in _Db.ChangeTracker.Entries()) {
-				switch (entry.State) {
+			foreach(var entry in _Db.ChangeTracker.Entries())
+			{
+				switch(entry.State)
+				{
 					case EntityState.Modified:
 						entry.State = EntityState.Unchanged;
 						break;
