@@ -1,4 +1,4 @@
-﻿// T4 code generation is enabled for model 'D:\Documents\Labs_prog\5th sem\db\lab7\dbBrowser\dbBrowser\Data\Model\UniversityDataBase.edmx'. 
+﻿// T4 code generation is enabled for model '[proj path]\\dbBrowser\dbBrowser\Data\Model\UniversityDataBase.edmx'. 
 // To enable legacy code generation, change the value of the 'Code Generation Strategy' designer
 // property to 'Legacy ObjectContext'. This property is available in the Properties Window when the model
 // is open in the designer.
