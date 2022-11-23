@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:dbBrowser.ViewModels"
         xmlns:dvm="clr-namespace:dbBrowser.ViewModels.Data"
+        xmlns:oxy="http://oxyplot.org/wpf"
         mc:Ignorable="d"
         Title="{Binding Title}" Height="450" Width="800">
     <Window.Resources>
@@ -154,6 +155,23 @@
                 <DataGrid Grid.Row="2" ItemsSource="{Binding ResultItems}" IsReadOnly="True"/>
                 <!--<TextBox Grid.Row="2" />-->
             </Grid>
+        </TabItem>
+
+        <TabItem Header="Диаграммы" DataContext="{Binding DiagramsViewModel}">
+            <TabControl>
+                <TabItem Header="Круговая из одной таблицы">
+                    <oxy:PlotView Model="{Binding PiePlotModel}"></oxy:PlotView>
+                </TabItem>
+                <TabItem Header="Столбчатая с одной серей">
+                    <oxy:PlotView Model="{Binding BarPlotModel}"></oxy:PlotView>
+                </TabItem>
+                <TabItem Header="Столбчатая с двумя сериями">
+                    <oxy:PlotView Model="{Binding BarPlotModel2Series}"></oxy:PlotView>
+                </TabItem>
+                <TabItem Header="Круговая по итогам">
+                    <oxy:PlotView Model="{Binding ResultPiePlotModel}"></oxy:PlotView>
+                </TabItem>
+            </TabControl>
         </TabItem>
     </TabControl>
 
