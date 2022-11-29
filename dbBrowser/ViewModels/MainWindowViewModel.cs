@@ -1,158 +1,165 @@
-﻿using System.Collections.Generic;
-using System.Data.Entity;
-using System.Windows.Input;
-using dbBrowser.Commands;
+﻿using dbBrowser.Commands;
+using dbBrowser.Data;
 using dbBrowser.Data.Model;
 using dbBrowser.ViewModels.Base;
 using dbBrowser.ViewModels.Data;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Windows.Input;
 
 namespace dbBrowser.ViewModels
 {
-	public class MainWindowViewModel : BaseViewModel
-	{
-		private readonly UniversityDataBaseContainer _Db;
+    public class MainWindowViewModel : BaseViewModel
+    {
+        private readonly UniversityDataBaseContainer _Db;
 
-		private string _Title = "dbBrowser";
-		private string _SelectedTableName;
-		private IItemsLoaded _SelectedViewModel;
-		private DiagramsViewModel _diagramsViewModel;
+        private string _Title = "dbBrowser";
+        private string _SelectedTableName;
+        private IItemsLoaded _SelectedViewModel;
+        private DiagramsViewModel _diagramsViewModel;
 
-		public DiagramsViewModel DiagramsViewModel {
-			get => _diagramsViewModel;
-			set => Set(ref _diagramsViewModel, value);
-		}
+        public DiagramsViewModel DiagramsViewModel
+        {
+            get => _diagramsViewModel;
+            set => Set(ref _diagramsViewModel, value);
+        }
 
-		public string Title {
-			get => _Title;
-			set => Set(ref _Title, value);
-		}
+        public string Title
+        {
+            get => _Title;
+            set => Set(ref _Title, value);
+        }
 
-		public IItemsLoaded SelectedViewModel {
-			get => _SelectedViewModel;
-			set => Set(ref _SelectedViewModel, value);
-		}
+        public IItemsLoaded SelectedViewModel
+        {
+            get => _SelectedViewModel;
+            set => Set(ref _SelectedViewModel, value);
+        }
 
-		public Dictionary<string, IItemsLoaded> TablesViewModelsFromNames { get; }
+        public Dictionary<string, IItemsLoaded> TablesViewModelsFromNames { get; }
 
-		public string SelectedTableName {
-			get => _SelectedTableName;
-			set {
-				SelectedViewModel = TablesViewModelsFromNames[value];
-				Set(ref _SelectedTableName, value);
-			}
-		}
+        public string SelectedTableName
+        {
+            get => _SelectedTableName;
+            set
+            {
+                SelectedViewModel = TablesViewModelsFromNames[value];
+                Set(ref _SelectedTableName, value);
+            }
+        }
 
-		public MainWindowViewModel()
-		{
-			_Db = new();
-			TablesViewModelsFromNames = new()
-			{
-				{ "Faculties", new FacultiesViewModel(_Db) },
-				{ "StudyGroups", new StudyGroupsViewModel(_Db) },
-				{ "Students", new StudentsViewModel(_Db) },
-				{ "Privileges", new PrivilegesViewModel(_Db) },
-				{ "FamilyRelations", new FamilyRelationsViewMode(_Db) },
-				{ "StudentParents", new StudentParentsViewModel(_Db) },
-			};
+        public MainWindowViewModel()
+        {
+            _Db = new();
+            DbInitializer.InitializeDb(_Db);
+            TablesViewModelsFromNames = new()
+            {
+                { "Faculties", new FacultiesViewModel(_Db) },
+                { "StudyGroups", new StudyGroupsViewModel(_Db) },
+                { "Students", new StudentsViewModel(_Db) },
+                { "Privileges", new PrivilegesViewModel(_Db) },
+                { "FamilyRelations", new FamilyRelationsViewMode(_Db) },
+                { "StudentParents", new StudentParentsViewModel(_Db) },
+            };
 
-			DiagramsViewModel = new DiagramsViewModel(_Db);
+            DiagramsViewModel = new DiagramsViewModel(_Db);
 
-			#region Commands
+            #region Commands
 
-			LoadFullTableDataCommand =
-				new LambdaCommand(OnLoadFullTableDataCommandExecuted, CanLoadFullTableDataCommandExecute);
+            LoadFullTableDataCommand =
+                new LambdaCommand(OnLoadFullTableDataCommandExecuted, CanLoadFullTableDataCommandExecute);
 
-			SaveDbChangesCommand =
-				new LambdaCommand(OnSaveDbChangesCommandExecuted, CanSaveDbChangesCommandExecute);
+            SaveDbChangesCommand =
+                new LambdaCommand(OnSaveDbChangesCommandExecuted, CanSaveDbChangesCommandExecute);
 
-			LoadAllTablesDataCommand =
-				new LambdaCommand(OnLoadAllTablesDataCommandExecuted, CanLoadAllTablesDataCommandExecute);
+            LoadAllTablesDataCommand =
+                new LambdaCommand(OnLoadAllTablesDataCommandExecuted, CanLoadAllTablesDataCommandExecute);
 
-			RemoveAllDataTablesChangesCommand =
-				new LambdaCommand(OnRemoveAllDataTablesChangesCommandExecuted, CanRemoveAllDataTablesChangesCommandExecute);
+            RemoveAllDataTablesChangesCommand =
+                new LambdaCommand(OnRemoveAllDataTablesChangesCommandExecuted, CanRemoveAllDataTablesChangesCommandExecute);
 
-			#endregion
-		}
-
-
-		#region Commands
+            #endregion
+        }
 
 
+        #region Commands
 
-		#region LoadFullTableDataCommand
 
-		public ICommand LoadFullTableDataCommand { get; }
 
-		private bool CanLoadFullTableDataCommandExecute(object p) => true;
+        #region LoadFullTableDataCommand
 
-		private void OnLoadFullTableDataCommandExecuted(object p)
-		{
-			TablesViewModelsFromNames[SelectedTableName].LoadItems();
-		}
+        public ICommand LoadFullTableDataCommand { get; }
 
-		#endregion
+        private bool CanLoadFullTableDataCommandExecute(object p) => true;
 
-		#region SaveDbChangesCommand
+        private void OnLoadFullTableDataCommandExecuted(object p)
+        {
+            TablesViewModelsFromNames[SelectedTableName].LoadItems();
+        }
 
-		public ICommand SaveDbChangesCommand { get; }
+        #endregion
 
-		private bool CanSaveDbChangesCommandExecute(object p) => true;
+        #region SaveDbChangesCommand
 
-		private void OnSaveDbChangesCommandExecuted(object p)
-		{
-			_Db.SaveChanges();
-			DiagramsViewModel.UpdateAllDiagrams();
-		}
+        public ICommand SaveDbChangesCommand { get; }
 
-		#endregion
+        private bool CanSaveDbChangesCommandExecute(object p) => true;
 
-		#region LoadAllTablesDataCommand
+        private void OnSaveDbChangesCommandExecuted(object p)
+        {
+            _Db.SaveChanges();
+            DiagramsViewModel.UpdateAllDiagrams();
+        }
 
-		public ICommand LoadAllTablesDataCommand { get; }
+        #endregion
 
-		private bool CanLoadAllTablesDataCommandExecute(object p) => true;
+        #region LoadAllTablesDataCommand
 
-		private void OnLoadAllTablesDataCommandExecuted(object p)
-		{
-			_Db.Faculties.Load();
-			_Db.StudyGroups.Load();
-			_Db.Students.Load();
-			_Db.StudentParents.Load();
-			_Db.FamilyRelations.Load();
-			_Db.Privileges.Load();
-			OnPropertyChanged(nameof(SelectedViewModel));
-		}
+        public ICommand LoadAllTablesDataCommand { get; }
 
-		#endregion
+        private bool CanLoadAllTablesDataCommandExecute(object p) => true;
 
-		#region RemoveAllDataTablesChangesCommand
+        private void OnLoadAllTablesDataCommandExecuted(object p)
+        {
+            _Db.Faculties.Load();
+            _Db.StudyGroups.Load();
+            _Db.Students.Load();
+            _Db.StudentParents.Load();
+            _Db.FamilyRelations.Load();
+            _Db.Privileges.Load();
+            OnPropertyChanged(nameof(SelectedViewModel));
+        }
 
-		public ICommand RemoveAllDataTablesChangesCommand { get; }
+        #endregion
 
-		private bool CanRemoveAllDataTablesChangesCommandExecute(object p) => true;
+        #region RemoveAllDataTablesChangesCommand
 
-		private void OnRemoveAllDataTablesChangesCommandExecuted(object p)
-		{
-			foreach(var entry in _Db.ChangeTracker.Entries())
-			{
-				switch(entry.State)
-				{
-					case EntityState.Modified:
-						entry.State = EntityState.Unchanged;
-						break;
-					case EntityState.Deleted:
-						entry.Reload();
-						break;
-					case EntityState.Added:
-						entry.State = EntityState.Detached;
-						break;
-				}
-			}
-		}
+        public ICommand RemoveAllDataTablesChangesCommand { get; }
 
-		#endregion
+        private bool CanRemoveAllDataTablesChangesCommandExecute(object p) => true;
 
-		#endregion
+        private void OnRemoveAllDataTablesChangesCommandExecuted(object p)
+        {
+            foreach (var entry in _Db.ChangeTracker.Entries())
+            {
+                switch (entry.State)
+                {
+                    case EntityState.Modified:
+                        entry.State = EntityState.Unchanged;
+                        break;
+                    case EntityState.Deleted:
+                        entry.Reload();
+                        break;
+                    case EntityState.Added:
+                        entry.State = EntityState.Detached;
+                        break;
+                }
+            }
+        }
 
-	}
+        #endregion
+
+        #endregion
+
+    }
 }

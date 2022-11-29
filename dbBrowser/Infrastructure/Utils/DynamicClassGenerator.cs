@@ -20,7 +20,7 @@ namespace dbBrowser.Infrastructure.Utils
             var propsInfo = instanceType.GetProperties();
             var currPropVal = propsValues.GetEnumerator();
 
-            if(propsInfo.Length != propsValues.Count())
+            if (propsInfo.Length != propsValues.Count())
                 throw new ArgumentException("PropsValues length not equal instanceType propperties count.");
 
             foreach (var prop in propsInfo)

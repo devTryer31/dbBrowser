@@ -8,6 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Models\**" />
+    <EmbeddedResource Remove="Models\**" />
+    <None Remove="Models\**" />
+    <Page Remove="Models\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Data\Model\UniversityDataBase.edmx" />
   </ItemGroup>
 
@@ -16,10 +23,6 @@
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>UniversityDataBase.Designer.cs</LastGenOutput>
     </EntityDeploy>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Models\" />
   </ItemGroup>
 
   <ItemGroup>
