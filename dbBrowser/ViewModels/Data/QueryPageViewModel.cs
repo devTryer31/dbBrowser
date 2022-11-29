@@ -1,17 +1,16 @@
-﻿using System;
+﻿using dbBrowser.Commands;
+using dbBrowser.Data.Model;
+using dbBrowser.Infrastructure.Utils;
+using dbBrowser.ViewModels.Base;
+using dbBrowser.Views.Windows;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Documents;
 using System.Windows.Input;
-using dbBrowser.Commands;
-using dbBrowser.Data.Model;
-using dbBrowser.Infrastructure.Utils;
-using dbBrowser.ViewModels.Base;
-using dbBrowser.Views.Windows;
 
 namespace dbBrowser.ViewModels.Data
 {
@@ -179,7 +178,7 @@ namespace dbBrowser.ViewModels.Data
                 return;
             }
 
-            if(Query.ToUpper().Contains("GROUP BY"))
+            if (Query.ToUpper().Contains("GROUP BY"))
             {
                 MessageBox.Show("GROUP BY currently not supported", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;

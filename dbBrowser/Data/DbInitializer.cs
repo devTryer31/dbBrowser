@@ -1,9 +1,7 @@
-﻿using System;
+﻿using dbBrowser.Data.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using dbBrowser.Data.Model;
 
 namespace dbBrowser.Data
 {
