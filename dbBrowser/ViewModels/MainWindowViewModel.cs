@@ -2,6 +2,7 @@
 using System.Data.Entity;
 using System.Windows.Input;
 using dbBrowser.Commands;
+using dbBrowser.Data;
 using dbBrowser.Data.Model;
 using dbBrowser.ViewModels.Base;
 using dbBrowser.ViewModels.Data;
@@ -45,7 +46,8 @@ namespace dbBrowser.ViewModels
 		public MainWindowViewModel()
 		{
 			_Db = new();
-			TablesViewModelsFromNames = new()
+			DbInitializer.InitializeDb(_Db);
+            TablesViewModelsFromNames = new()
 			{
 				{ "Faculties", new FacultiesViewModel(_Db) },
 				{ "StudyGroups", new StudyGroupsViewModel(_Db) },
